@@ -1,4 +1,4 @@
-package sumago.androidipt.day11b1;
+package sumago.androidipt.b1expensemanager;
 
 import android.os.Bundle;
 

@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace = "sumago.androidipt.day11b1"
+    namespace = "sumago.androidipt.b1expensemanager"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "sumago.androidipt.day11b1"
+        applicationId = "sumago.androidipt.b1expensemanager"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
