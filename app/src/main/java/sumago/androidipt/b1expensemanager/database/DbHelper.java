@@ -2,12 +2,15 @@ package sumago.androidipt.b1expensemanager.database;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+
+import java.util.ArrayList;
 
 import sumago.androidipt.b1expensemanager.models.Expense;
 
@@ -65,6 +68,7 @@ public class DbHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
+
     }
 
 
@@ -79,7 +83,47 @@ public class DbHelper extends SQLiteOpenHelper {
         values.put(COLUMN_EXPENSE_CATEGORY_NAME,expense.getCategoryName());
         long id=database.insert(TABLE_EXPENSE,null,values);
         return id;
+    }
 
+    public ArrayList<Expense> getAllExpenses(){
 
+        ArrayList<Expense> list=new ArrayList<>();
+        SQLiteDatabase database=getReadableDatabase();
+        Cursor cursor=database.rawQuery("SELECT * FROM "+TABLE_EXPENSE,null);
+        if(cursor.moveToFirst())
+        {
+            do{
+                Expense expense=new Expense();
+                expense.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EXPENSE_NAME)));
+                expense.setAmount(cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_EXPENSE_AMOUNT)));
+                expense.setDate(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EXPENSE_DATE)));
+                expense.setCategoryId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_EXPENSE_CATEGORY_ID)));
+                expense.setCategoryName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EXPENSE_CATEGORY_NAME)));
+                expense.setId(cursor.getInt(0));
+                list.add(expense);
+            }while (cursor.moveToNext());
+        }
+        return list;
+    }
+
+    public double getSum()
+    {
+        double sum=0d;
+        SQLiteDatabase database=getReadableDatabase();
+
+        Cursor cursor=database.rawQuery("SELECT SUM(amount) FROM expense",null);
+        if(cursor.moveToFirst())
+        {
+            sum=cursor.getDouble(0);
+        }
+
+        return sum;
+    }
+
+    public int delete(int id)
+    {
+        SQLiteDatabase database=getWritableDatabase();
+        int count=database.delete(TABLE_EXPENSE,"id=?",new String[]{String.valueOf(id)});
+        return count;
     }
 }

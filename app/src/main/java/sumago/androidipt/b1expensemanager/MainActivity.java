@@ -2,6 +2,7 @@ package sumago.androidipt.b1expensemanager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -15,7 +16,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
 
+import java.util.ArrayList;
+
 import sumago.androidipt.b1expensemanager.database.DbHelper;
+import sumago.androidipt.b1expensemanager.models.Expense;
 
 public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
@@ -30,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
         loadFragment(new HomeFragment());
         dbHelper=new DbHelper(this);
         fabAdd=findViewById(R.id.fabAdd);
+        ArrayList<Expense> list=dbHelper.getAllExpenses();
+        Log.d("mytag",""+list.size());
        // dbHelper.onCreate(dbHelper.getWritableDatabase());
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
@@ -57,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
         fabAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 Intent intent=new Intent(MainActivity.this, AddExpenseActivity.class);
                 startActivity(intent);
             }
@@ -70,4 +75,6 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.replace(R.id.fragmentContainer,fragment);
         fragmentTransaction.commit();
     }
+
+
 }

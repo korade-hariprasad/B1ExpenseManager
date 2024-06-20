@@ -5,19 +5,30 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+
+import sumago.androidipt.b1expensemanager.adapters.ExpenseListAdapter;
+import sumago.androidipt.b1expensemanager.database.DbHelper;
+import sumago.androidipt.b1expensemanager.interfaces.OnDeleteListener;
+import sumago.androidipt.b1expensemanager.models.Expense;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link HomeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements OnDeleteListener {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -29,11 +40,14 @@ public class HomeFragment extends Fragment {
     private String mParam2;
 
     Button button;
+    RecyclerView recyclerViewExpenseList;
+    ExpenseListAdapter expenseListAdapter;
+    DbHelper dbHelper;
+    TextView tvTotal;
 
     public HomeFragment() {
         // Required empty public constructor
     }
-
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -71,13 +85,27 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        button=view.findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        recyclerViewExpenseList=view.findViewById(R.id.recyclerViewExpenseList);
+        tvTotal=view.findViewById(R.id.tvTotal);
+        RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(getActivity(),RecyclerView.VERTICAL,false);
+        recyclerViewExpenseList.setLayoutManager(layoutManager);
+        dbHelper=new DbHelper(getActivity());
+        ArrayList<Expense> list=dbHelper.getAllExpenses();
+        double sum= dbHelper.getSum();
+        tvTotal.setText("₹ "+sum);
+        expenseListAdapter=new ExpenseListAdapter(list,HomeFragment.this);
+        recyclerViewExpenseList.setAdapter(expenseListAdapter);
+        recyclerViewExpenseList.addItemDecoration(new DividerItemDecoration(getActivity(),DividerItemDecoration.VERTICAL));
+    }
 
-                Toast.makeText(getActivity(), "Clicked on Button", Toast.LENGTH_SHORT).show();
-            }
-        });
+    @Override
+    public void onDelete(Expense expense) {
+        dbHelper.delete(expense.getId());
+        ArrayList<Expense> list=dbHelper.getAllExpenses();
+        double sum= dbHelper.getSum();
+        tvTotal.setText("₹ "+sum);
+        expenseListAdapter=new ExpenseListAdapter(list,HomeFragment.this);
+        recyclerViewExpenseList.setAdapter(expenseListAdapter);
+        recyclerViewExpenseList.addItemDecoration(new DividerItemDecoration(getActivity(),DividerItemDecoration.VERTICAL));
     }
 }
