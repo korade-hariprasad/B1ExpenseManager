@@ -44,18 +44,14 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
 
             }
         });
-
         cardEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                Intent intent=new Intent(ExpenseDetailsActivity.this, ExpenseDetailsActivity.class);
+                Intent intent=new Intent(ExpenseDetailsActivity.this, UpdateExpenseActivity.class);
                 intent.putExtra("id",expenseId);
                 startActivity(intent);
             }
         });
-
-
     }
 
     private void setDetails(Expense expense) {

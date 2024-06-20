@@ -30,9 +30,12 @@
             android:hint="Expense Name">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etName"
+                android:inputType="textPersonName"
+                android:imeOptions="actionNext"
+                android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:drawableLeft="@drawable/title_24px" />
+                 />
         </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
@@ -53,6 +56,8 @@
                     android:layout_height="wrap_content"
                     android:drawableLeft="@drawable/currency_rupee_24px"
                     android:inputType="number"
+                    android:imeOptions="actionNext"
+                    android:digits="0123456789."
                     android:maxLength="10" />
             </com.google.android.material.textfield.TextInputLayout>
             <com.google.android.material.textfield.TextInputLayout
@@ -88,7 +93,7 @@
                 android:id="@+id/etNote"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:lines="4"
+                android:lines="3"
                 android:layout_gravity="start"
                 android:gravity="start" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -101,7 +106,6 @@
             android:orientation="vertical"
             app:selectionRequired="true"
             app:singleSelection="true" />
-
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnAdd"
             android:layout_width="match_parent"

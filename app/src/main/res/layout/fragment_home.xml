@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_margin="8dp"
     tools:context=".HomeFragment">
     <LinearLayout
@@ -18,19 +19,19 @@
             android:layout_height="1dp"></View>
 
         <TextView
-            android:textSize="20sp"
+            android:textSize="16sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Total :"/>
+            android:text="Total: "/>
 
         <TextView
             android:layout_marginLeft="24dp"
             android:layout_marginRight="16dp"
-            android:textSize="20sp"
+            android:textSize="16sp"
             android:id="@+id/tvTotal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Total :"/>
+            android:text="$ 20"/>
 
     </LinearLayout>
 

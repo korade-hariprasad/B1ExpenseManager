@@ -24,7 +24,7 @@ public class AddExpenseActivity extends AppCompatActivity {
     TextInputEditText etName;
     TextInputEditText etAmount;
     TextInputEditText etDate;
-    TextInputEditText etNotes;;
+    TextInputEditText etNotes;
     Button btnAdd;
 
     DbHelper dbHelper;
@@ -48,7 +48,6 @@ public class AddExpenseActivity extends AppCompatActivity {
 
                 if(validateFields())
                 {
-
                     String name=etName.getText().toString();
                     double amount=Double.parseDouble(etAmount.getText().toString());
                     String note=etNotes.getText().toString();
@@ -60,11 +59,6 @@ public class AddExpenseActivity extends AppCompatActivity {
                 }
             }
         });
-
-
-
-
-
     }
 
     private boolean validateFields() {
