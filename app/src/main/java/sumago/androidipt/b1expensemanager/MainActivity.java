@@ -2,6 +2,7 @@ package sumago.androidipt.b1expensemanager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,8 +35,13 @@ public class MainActivity extends AppCompatActivity {
         loadFragment(new HomeFragment());
         dbHelper=new DbHelper(this);
         fabAdd=findViewById(R.id.fabAdd);
-        ArrayList<Expense> list=dbHelper.getAllExpenses();
-        Log.d("mytag",""+list.size());
+
+
+
+
+
+
+
        // dbHelper.onCreate(dbHelper.getWritableDatabase());
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override

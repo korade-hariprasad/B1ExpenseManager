@@ -1,6 +1,5 @@
 package sumago.androidipt.b1expensemanager;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -17,15 +16,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
 import sumago.androidipt.b1expensemanager.adapters.ExpenseListAdapter;
 import sumago.androidipt.b1expensemanager.database.DbHelper;
-import sumago.androidipt.b1expensemanager.interfaces.OnDeleteListener;
+import sumago.androidipt.b1expensemanager.interfaces.OnListItemClickListener;
 import sumago.androidipt.b1expensemanager.models.Expense;
 
 /**
@@ -33,7 +29,7 @@ import sumago.androidipt.b1expensemanager.models.Expense;
  * Use the {@link HomeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomeFragment extends Fragment implements OnDeleteListener {
+public class HomeFragment extends Fragment implements OnListItemClickListener {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -104,11 +100,21 @@ public class HomeFragment extends Fragment implements OnDeleteListener {
     }
 
     @Override
-    public void onDelete(Expense expense) {
-        dbHelper.delete(expense.getId());
+    public void onListItemClick(Expense expense) {
+        Intent intent=new Intent(getActivity(),ExpenseDetailsActivity.class);
+        intent.putExtra("id",expense.getId());
+        intent.putExtra("name",expense.getName());
+        intent.putExtra("amount",expense.getAmount());
+        intent.putExtra("category",expense.getCategoryName());
+        intent.putExtra("categoryId",expense.getCategoryId());
+        intent.putExtra("note",expense.getNote());
+        intent.putExtra("date",expense.getDate());
+
+        startActivity(intent);
+        /*dbHelper.delete(expense.getId());
         ArrayList<Expense> list=dbHelper.getAllExpenses();
         expenseListAdapter=new ExpenseListAdapter(list,HomeFragment.this);
-        recyclerViewExpenseList.setAdapter(expenseListAdapter);
+        recyclerViewExpenseList.setAdapter(expenseListAdapter);*/
     }
 
     @Override

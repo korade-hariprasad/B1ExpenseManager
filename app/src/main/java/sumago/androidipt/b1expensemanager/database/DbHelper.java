@@ -28,6 +28,7 @@ public class DbHelper extends SQLiteOpenHelper {
     // Expense Table Columns
     private static final String COLUMN_EXPENSE_ID = "id";
     private static final String COLUMN_EXPENSE_NAME = "name";
+    private static final String COLUMN_EXPENSE_NOTE = "note";
     private static final String COLUMN_EXPENSE_DATE = "date";
     private static final String COLUMN_EXPENSE_AMOUNT = "amount";
     private static final String COLUMN_EXPENSE_CATEGORY_ID = "categoryId";
@@ -44,6 +45,7 @@ public class DbHelper extends SQLiteOpenHelper {
             + COLUMN_EXPENSE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + COLUMN_EXPENSE_NAME + " TEXT NOT NULL, "
             + COLUMN_EXPENSE_DATE + " TEXT NOT NULL, "
+            + COLUMN_EXPENSE_NOTE + " TEXT NOT NULL, "
             + COLUMN_EXPENSE_AMOUNT + " REAL NOT NULL, "
             + COLUMN_EXPENSE_CATEGORY_ID + " INTEGER, "
             + COLUMN_EXPENSE_CATEGORY_NAME + " TEXT NOT NULL, "
@@ -71,7 +73,6 @@ public class DbHelper extends SQLiteOpenHelper {
 
     }
 
-
     public long insertExpense(Expense expense)
     {
         SQLiteDatabase database=getWritableDatabase();
@@ -79,6 +80,7 @@ public class DbHelper extends SQLiteOpenHelper {
         values.put(COLUMN_EXPENSE_NAME,expense.getName());
         values.put(COLUMN_EXPENSE_AMOUNT,expense.getAmount());
         values.put(COLUMN_EXPENSE_DATE,expense.getDate());
+        values.put(COLUMN_EXPENSE_NOTE,expense.getNote());
         values.put(COLUMN_EXPENSE_CATEGORY_ID,expense.getCategoryId());
         values.put(COLUMN_EXPENSE_CATEGORY_NAME,expense.getCategoryName());
         long id=database.insert(TABLE_EXPENSE,null,values);
@@ -97,6 +99,7 @@ public class DbHelper extends SQLiteOpenHelper {
                 expense.setName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EXPENSE_NAME)));
                 expense.setAmount(cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_EXPENSE_AMOUNT)));
                 expense.setDate(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EXPENSE_DATE)));
+                expense.setNote(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EXPENSE_NOTE)));
                 expense.setCategoryId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_EXPENSE_CATEGORY_ID)));
                 expense.setCategoryName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EXPENSE_CATEGORY_NAME)));
                 expense.setId(cursor.getInt(0));
@@ -125,5 +128,22 @@ public class DbHelper extends SQLiteOpenHelper {
         SQLiteDatabase database=getWritableDatabase();
         int count=database.delete(TABLE_EXPENSE,"id=?",new String[]{String.valueOf(id)});
         return count;
+    }
+
+    public int updateExpense(Expense expense){
+        SQLiteDatabase database=getWritableDatabase();
+        ContentValues values=new ContentValues();
+        values.put(COLUMN_EXPENSE_NAME,expense.getName());
+        values.put(COLUMN_EXPENSE_AMOUNT,expense.getAmount());
+        values.put(COLUMN_EXPENSE_DATE,expense.getDate());
+        values.put(COLUMN_EXPENSE_NOTE,expense.getNote());
+        values.put(COLUMN_EXPENSE_CATEGORY_ID,expense.getCategoryId());
+        values.put(COLUMN_EXPENSE_CATEGORY_NAME,expense.getCategoryName());
+        int id= 0;
+        try {
+            id = database.update(TABLE_EXPENSE,values,"id=?",new String[]{String.valueOf(expense.getId())});
+        } catch (Exception e) {
+        }
+        return id;
     }
 }

@@ -1,6 +1,8 @@
 package sumago.androidipt.b1expensemanager;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -27,6 +29,13 @@ public class UpdateExpenseActivity extends AppCompatActivity {
     TextInputEditText etNotes;
     Button btnUpdate;
     DbHelper dbHelper;
+    int expenseId;
+    int categoryId;
+    String name;
+    String note;
+    String category;
+    String date;
+    double amount;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,7 +48,20 @@ public class UpdateExpenseActivity extends AppCompatActivity {
         txLayoutExpenseName=findViewById(R.id.txExpenseNameLayout);
         txLayoutAmount=findViewById(R.id.txAmountLayout);
         dbHelper=new DbHelper(this);
-        setDetails(new Expense());
+        expenseId=getIntent().getIntExtra("id",0);
+        Log.d("mytag","main===>"+expenseId);
+        categoryId=getIntent().getIntExtra("categoryId",0);
+        name=getIntent().getStringExtra("name");
+        note=getIntent().getStringExtra("note");
+        category=getIntent().getStringExtra("category");
+        date=getIntent().getStringExtra("date");
+        amount=getIntent().getDoubleExtra("amount",0);
+
+        etName.setText(name);
+        etAmount.setText(""+amount);
+        etNotes.setText(note);
+        etDate.setText(date);
+
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -50,18 +72,23 @@ public class UpdateExpenseActivity extends AppCompatActivity {
                     String note=etNotes.getText().toString();
                     String date=etDate.getText().toString();
                     String catName="Default";
-                    int catId=1;
+                    int count=dbHelper.updateExpense(new Expense(expenseId,name,catName,date,amount,categoryId,note));
+                    Log.d("mytag",""+count);
+                    Log.d("mytag",""+expenseId);
+                    if(count>0)
+                    {
+                        Intent intent=new Intent(UpdateExpenseActivity.this,MainActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                    }
+                }else{
+                    Log.d("mytag","Validation Failed");
                 }
             }
         });
     }
 
-    private void setDetails(Expense expense) {
-        etName.setText(expense.getName());
-        etAmount.setText(""+expense.getAmount());
-        etNotes.setText(expense.getNote());
-        etDate.setText(expense.getDate());
-    }
+
 
     private boolean validateFields() {
         ArrayList<Boolean> errors=new ArrayList<>();

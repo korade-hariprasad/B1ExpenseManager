@@ -31,7 +31,6 @@
             app:menu="@menu/bottom_menu"
             app:labelVisibilityMode="labeled"/>
     </com.google.android.material.bottomappbar.BottomAppBar>
-
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAdd"
         app:layout_anchor="@id/bottomAppBar"
@@ -43,5 +42,4 @@
         android:src="@android:drawable/ic_input_add"
         app:fabSize="auto"
         android:tint="@android:color/white"/>
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

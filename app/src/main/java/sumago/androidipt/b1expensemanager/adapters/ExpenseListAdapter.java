@@ -11,14 +11,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 import sumago.androidipt.b1expensemanager.R;
-import sumago.androidipt.b1expensemanager.interfaces.OnDeleteListener;
+import sumago.androidipt.b1expensemanager.interfaces.OnListItemClickListener;
 import sumago.androidipt.b1expensemanager.models.Expense;
 
 public class ExpenseListAdapter extends RecyclerView.Adapter<ExpenseListAdapter.ViewHolder> {
     ArrayList<Expense> list;
-    OnDeleteListener onDeleteListener;
+    OnListItemClickListener onDeleteListener;
 
-    public ExpenseListAdapter(ArrayList<Expense> list,OnDeleteListener onDeleteListener) {
+    public ExpenseListAdapter(ArrayList<Expense> list, OnListItemClickListener onDeleteListener) {
         this.list = list;
         this.onDeleteListener=onDeleteListener;
     }
@@ -39,7 +39,7 @@ public class ExpenseListAdapter extends RecyclerView.Adapter<ExpenseListAdapter.
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onDeleteListener.onDelete(list.get(position));
+                onDeleteListener.onListItemClick(list.get(position));
             }
         });
 
