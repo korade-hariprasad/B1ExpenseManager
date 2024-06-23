@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 
+import sumago.androidipt.b1expensemanager.models.Category;
 import sumago.androidipt.b1expensemanager.models.Expense;
 
 public class DbHelper extends SQLiteOpenHelper {
@@ -24,7 +25,7 @@ public class DbHelper extends SQLiteOpenHelper {
     private static final String COLUMN_IS_DELETED = "is_deleted";
     // Category Table Columns
     private static final String COLUMN_CATEGORY_ID = "id";
-    private static final String COLUMN_CATEGORY_NAME = "category_name";
+    private static final String COLUMN_CATEGORY_NAME = "categoryName";
     // Expense Table Columns
     private static final String COLUMN_EXPENSE_ID = "id";
     private static final String COLUMN_EXPENSE_NAME = "name";
@@ -52,6 +53,17 @@ public class DbHelper extends SQLiteOpenHelper {
             + COLUMN_IS_DELETED + " INTEGER DEFAULT 0"
             + ");";
 
+    String grandQuery="SELECT" +
+            " categoryName," +
+            " TOTAL(amount) as totalAmount," +
+            " MAX(amount) as maxAmount," +
+            " MIN(amount) as minAmount," +
+            " AVG(amount) as averageAmount" +
+            " FROM" +
+            " expense" +
+            " GROUP BY" +
+            " categoryId DESC;";
+
     public DbHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -61,6 +73,7 @@ public class DbHelper extends SQLiteOpenHelper {
         try {
             db.execSQL(CREATE_TABLE_CATEGORY);
             db.execSQL(CREATE_TABLE_EXPENSE);
+            db.execSQL("INSERT INTO category (categoryName) VALUES ('General')");
         } catch (SQLException e) {
             Log.d("mytag",e.getMessage(),e);
             e.printStackTrace();
@@ -91,7 +104,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
         ArrayList<Expense> list=new ArrayList<>();
         SQLiteDatabase database=getReadableDatabase();
-        Cursor cursor=database.rawQuery("SELECT * FROM "+TABLE_EXPENSE,null);
+        Cursor cursor=database.rawQuery("SELECT * FROM "+TABLE_EXPENSE+" ORDER BY "+COLUMN_EXPENSE_ID+" DESC",null);
         if(cursor.moveToFirst())
         {
             do{
@@ -145,5 +158,32 @@ public class DbHelper extends SQLiteOpenHelper {
         } catch (Exception e) {
         }
         return id;
+    }
+    public void clearAll()
+    {
+        SQLiteDatabase database=getWritableDatabase();
+        database.execSQL("DELETE FROM "+TABLE_EXPENSE);
+        database.execSQL("DELETE FROM " + TABLE_CATEGORY + " WHERE id > 1");
+    }
+
+
+    public long insertCategory(String category){
+
+
+        return 0;
+    }
+
+    public ArrayList<Category> getAllCategories(){
+        ArrayList<Category> list=new ArrayList<>();
+
+
+        return list;
+    }
+
+    public int deleteCategoryById(int id)
+    {
+
+
+        return 0;
     }
 }

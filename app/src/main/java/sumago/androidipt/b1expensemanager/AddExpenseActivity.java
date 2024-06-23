@@ -41,11 +41,9 @@ public class AddExpenseActivity extends AppCompatActivity {
         txLayoutExpenseName=findViewById(R.id.txExpenseNameLayout);
         txLayoutAmount=findViewById(R.id.txAmountLayout);
         dbHelper=new DbHelper(this);
-
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 if(validateFields())
                 {
                     String name=etName.getText().toString();
