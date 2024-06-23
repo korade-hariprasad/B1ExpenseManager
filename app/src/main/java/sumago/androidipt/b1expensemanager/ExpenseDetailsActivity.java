@@ -64,7 +64,7 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                int count=dbHelper.delete(expenseId);
+                int count=dbHelper.deleteExpenseById(expenseId);
                 if(count>0)
                 {
                     finish();
@@ -75,7 +75,6 @@ public class ExpenseDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(ExpenseDetailsActivity.this, UpdateExpenseActivity.class);
-                Log.d("mytag","================>"+expenseId);
                 intent.putExtra("id",expenseId);
                 intent.putExtra("name",name);
                 intent.putExtra("amount",amount);

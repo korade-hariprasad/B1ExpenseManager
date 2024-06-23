@@ -78,7 +78,7 @@ public class UpdateExpenseActivity extends AppCompatActivity {
                     if(count>0)
                     {
                         Intent intent=new Intent(UpdateExpenseActivity.this,MainActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                     }
                 }else{
@@ -96,18 +96,18 @@ public class UpdateExpenseActivity extends AppCompatActivity {
         if(!etName.getText().toString().isEmpty() && etName.getText().toString().length()>1)
         {
             errors.add(true);
-            etName.setError(null);
+            txLayoutExpenseName.setError(null);
         }else
         {
-            etName.setError("Please enter a valid name");
+            txLayoutExpenseName.setError("Please enter a valid name");
             errors.add(false);
         }
         if(!etAmount.getText().toString().isEmpty() && etAmount.getText().toString().length()>0)
         {
             errors.add(true);
-            etAmount.setError(null);
+            txLayoutAmount.setError(null);
         }else{
-            etAmount.setError("Please enter a valid amount");
+            txLayoutAmount.setError("Please enter a valid amount");
             errors.add(false);
         }
         return !errors.contains(false);

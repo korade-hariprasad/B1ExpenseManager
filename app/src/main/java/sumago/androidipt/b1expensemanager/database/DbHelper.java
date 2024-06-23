@@ -12,7 +12,9 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 
+import sumago.androidipt.b1expensemanager.models.Category;
 import sumago.androidipt.b1expensemanager.models.Expense;
+import sumago.androidipt.b1expensemanager.models.ExpenseReport;
 
 public class DbHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
@@ -24,7 +26,7 @@ public class DbHelper extends SQLiteOpenHelper {
     private static final String COLUMN_IS_DELETED = "is_deleted";
     // Category Table Columns
     private static final String COLUMN_CATEGORY_ID = "id";
-    private static final String COLUMN_CATEGORY_NAME = "category_name";
+    private static final String COLUMN_CATEGORY_NAME = "categoryName";
     // Expense Table Columns
     private static final String COLUMN_EXPENSE_ID = "id";
     private static final String COLUMN_EXPENSE_NAME = "name";
@@ -52,6 +54,57 @@ public class DbHelper extends SQLiteOpenHelper {
             + COLUMN_IS_DELETED + " INTEGER DEFAULT 0"
             + ");";
 
+   String grandQuery="SELECT" +
+           " categoryName," +
+           " TOTAL(amount) as totalAmount," +
+           " MAX(amount) as maxAmount," +
+           " MIN(amount) as minAmount," +
+           " AVG(amount) as averageAmount" +
+           " FROM" +
+           " expense" +
+           " GROUP BY" +
+           " categoryId;";
+
+    String weeklyQuery = "SELECT" +
+            " categoryName," +
+            " TOTAL(amount) as totalAmount," +
+            " MAX(amount) as maxAmount," +
+            " MIN(amount) as minAmount," +
+            " AVG(amount) as averageAmount" +
+            " FROM" +
+            " expense" +
+            " WHERE" +
+            " date >= DATE('now', '-7 days')" +
+            " GROUP BY" +
+            " categoryId;";
+
+    String monthlyQuery = "SELECT" +
+            " categoryName," +
+            " TOTAL(amount) as totalAmount," +
+            " MAX(amount) as maxAmount," +
+            " MIN(amount) as minAmount," +
+            " AVG(amount) as averageAmount" +
+            " FROM" +
+            " expense" +
+            " WHERE" +
+            " date >= DATE('now', '-1 month')" +
+            " GROUP BY" +
+            " categoryId;";
+
+
+    String customDateQuery = "SELECT" +
+            " categoryName," +
+            " TOTAL(amount) as totalAmount," +
+            " MAX(amount) as maxAmount," +
+            " MIN(amount) as minAmount," +
+            " AVG(amount) as averageAmount" +
+            " FROM" +
+            " expense" +
+            " WHERE" +
+            " date BETWEEN ? AND ?" +
+            " GROUP BY" +
+            " categoryId;";
+
     public DbHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -61,6 +114,7 @@ public class DbHelper extends SQLiteOpenHelper {
         try {
             db.execSQL(CREATE_TABLE_CATEGORY);
             db.execSQL(CREATE_TABLE_EXPENSE);
+            db.execSQL("INSERT INTO category (categoryName) VALUES ('General')");
         } catch (SQLException e) {
             Log.d("mytag",e.getMessage(),e);
             e.printStackTrace();
@@ -91,7 +145,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
         ArrayList<Expense> list=new ArrayList<>();
         SQLiteDatabase database=getReadableDatabase();
-        Cursor cursor=database.rawQuery("SELECT * FROM "+TABLE_EXPENSE,null);
+        Cursor cursor=database.rawQuery("SELECT * FROM "+TABLE_EXPENSE+" ORDER BY "+COLUMN_EXPENSE_ID+" DESC",null);
         if(cursor.moveToFirst())
         {
             do{
@@ -123,7 +177,7 @@ public class DbHelper extends SQLiteOpenHelper {
         return sum;
     }
 
-    public int delete(int id)
+    public int deleteExpenseById(int id)
     {
         SQLiteDatabase database=getWritableDatabase();
         int count=database.delete(TABLE_EXPENSE,"id=?",new String[]{String.valueOf(id)});
@@ -146,4 +200,140 @@ public class DbHelper extends SQLiteOpenHelper {
         }
         return id;
     }
+
+    public ArrayList<Category> getAllCategories(){
+
+        SQLiteDatabase database=getWritableDatabase();
+        ArrayList<Category> list=new ArrayList<>();
+        Cursor cursor=database.rawQuery("SELECT * FROM "+TABLE_CATEGORY+" ORDER BY "+COLUMN_CATEGORY_ID+" DESC",null);
+        if(cursor!=null)
+        {
+            if(cursor.moveToFirst())
+            {
+                do{
+                    Category category=new Category();
+                    category.setId(cursor.getInt(0));
+                    category.setName(cursor.getString(1));
+                    list.add(category);
+
+                } while (cursor.moveToNext());
+            }
+        }
+        return list;
+    }
+
+    public long insertCategory(String name)
+    {
+        SQLiteDatabase database=getWritableDatabase();
+        ContentValues values=new ContentValues();
+        values.put(COLUMN_CATEGORY_NAME,name);
+        long id=database.insert(TABLE_CATEGORY,null,values);
+        return id;
+    }
+
+    public int deleteCategory(int id)
+    {
+        SQLiteDatabase database=getWritableDatabase();
+        int count=database.delete(TABLE_CATEGORY,"id=?",new String[]{String.valueOf(id)});
+        return count;
+    }
+
+    public ArrayList<ExpenseReport> getExpenseReport(){
+        SQLiteDatabase database=getWritableDatabase();
+        ArrayList<ExpenseReport> list=new ArrayList<>();
+        Cursor cursor=database.rawQuery(grandQuery,null);
+        if(cursor!=null)
+        {
+            if(cursor.moveToFirst())
+            {
+                do{
+                    ExpenseReport expenseReport=new ExpenseReport();
+                    expenseReport.setCategoryName(cursor.getString(cursor.getColumnIndexOrThrow("categoryName")));
+                    expenseReport.setAverageAmount(cursor.getDouble(cursor.getColumnIndexOrThrow("averageAmount")));
+                    expenseReport.setMinAmount(cursor.getDouble(cursor.getColumnIndexOrThrow("minAmount")));
+                    expenseReport.setMaxAmount(cursor.getDouble(cursor.getColumnIndexOrThrow("maxAmount")));
+                    expenseReport.setTotalAmount(cursor.getDouble(cursor.getColumnIndexOrThrow("totalAmount")));
+                    list.add(expenseReport);
+
+                } while (cursor.moveToNext());
+            }
+        }
+        return list;
+    }
+    public ArrayList<ExpenseReport> getMonthlyExpneseReport(){
+        SQLiteDatabase database=getWritableDatabase();
+        ArrayList<ExpenseReport> list=new ArrayList<>();
+        Cursor cursor=database.rawQuery(monthlyQuery,null);
+        if(cursor!=null)
+        {
+            if(cursor.moveToFirst())
+            {
+                do{
+                    ExpenseReport expenseReport=new ExpenseReport();
+                    expenseReport.setCategoryName(cursor.getString(cursor.getColumnIndexOrThrow("categoryName")));
+                    expenseReport.setAverageAmount(cursor.getDouble(cursor.getColumnIndexOrThrow("averageAmount")));
+                    expenseReport.setMinAmount(cursor.getDouble(cursor.getColumnIndexOrThrow("minAmount")));
+                    expenseReport.setMaxAmount(cursor.getDouble(cursor.getColumnIndexOrThrow("maxAmount")));
+                    expenseReport.setTotalAmount(cursor.getDouble(cursor.getColumnIndexOrThrow("totalAmount")));
+                    list.add(expenseReport);
+
+                } while (cursor.moveToNext());
+            }
+        }
+        return list;
+    }
+    public ArrayList<ExpenseReport> getWeeklyExpneseReport(){
+        SQLiteDatabase database=getWritableDatabase();
+        ArrayList<ExpenseReport> list=new ArrayList<>();
+        Cursor cursor=database.rawQuery(weeklyQuery,null);
+        if(cursor!=null)
+        {
+            if(cursor.moveToFirst())
+            {
+                do{
+                    ExpenseReport expenseReport=new ExpenseReport();
+                    expenseReport.setCategoryName(cursor.getString(cursor.getColumnIndexOrThrow("categoryName")));
+                    expenseReport.setAverageAmount(cursor.getDouble(cursor.getColumnIndexOrThrow("averageAmount")));
+                    expenseReport.setMinAmount(cursor.getDouble(cursor.getColumnIndexOrThrow("minAmount")));
+                    expenseReport.setMaxAmount(cursor.getDouble(cursor.getColumnIndexOrThrow("maxAmount")));
+                    expenseReport.setTotalAmount(cursor.getDouble(cursor.getColumnIndexOrThrow("totalAmount")));
+                    list.add(expenseReport);
+
+                } while (cursor.moveToNext());
+            }
+        }
+        return list;
+    }
+
+    public ArrayList<ExpenseReport> getCustomDateExpenseReport(String fromDate,String toDate){
+        SQLiteDatabase database=getWritableDatabase();
+        ArrayList<ExpenseReport> list=new ArrayList<>();
+        Cursor cursor=database.rawQuery(customDateQuery,new String[]{fromDate,toDate});
+        if(cursor!=null)
+        {
+            if(cursor.moveToFirst())
+            {
+                do{
+                    ExpenseReport expenseReport=new ExpenseReport();
+                    expenseReport.setCategoryName(cursor.getString(cursor.getColumnIndexOrThrow("categoryName")));
+                    expenseReport.setAverageAmount(cursor.getDouble(cursor.getColumnIndexOrThrow("averageAmount")));
+                    expenseReport.setMinAmount(cursor.getDouble(cursor.getColumnIndexOrThrow("minAmount")));
+                    expenseReport.setMaxAmount(cursor.getDouble(cursor.getColumnIndexOrThrow("maxAmount")));
+                    expenseReport.setTotalAmount(cursor.getDouble(cursor.getColumnIndexOrThrow("totalAmount")));
+                    list.add(expenseReport);
+
+                } while (cursor.moveToNext());
+            }
+        }
+        return list;
+    }
+
+    public void clearAll(){
+
+        SQLiteDatabase database=getWritableDatabase();
+        database.execSQL("DELETE FROM "+TABLE_EXPENSE);
+        database.execSQL("DELETE FROM " + TABLE_CATEGORY + " WHERE id > 1");
+    }
+
+
 }

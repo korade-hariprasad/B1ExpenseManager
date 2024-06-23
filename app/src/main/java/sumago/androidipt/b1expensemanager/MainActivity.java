@@ -1,6 +1,7 @@
 package sumago.androidipt.b1expensemanager;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -35,14 +36,7 @@ public class MainActivity extends AppCompatActivity {
         loadFragment(new HomeFragment());
         dbHelper=new DbHelper(this);
         fabAdd=findViewById(R.id.fabAdd);
-
-
-
-
-
-
-
-       // dbHelper.onCreate(dbHelper.getWritableDatabase());
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -79,8 +73,13 @@ public class MainActivity extends AppCompatActivity {
         FragmentManager fragmentManager=getSupportFragmentManager();
         FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragmentContainer,fragment);
+        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
 
-
+    @Override
+    protected void onStop() {
+        super.onStop();
+        dbHelper.close();
+    }
 }

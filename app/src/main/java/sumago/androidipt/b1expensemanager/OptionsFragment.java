@@ -1,11 +1,26 @@
 package sumago.androidipt.b1expensemanager;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
+
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
+
+import java.util.ArrayList;
+
+import sumago.androidipt.b1expensemanager.database.DbHelper;
+import sumago.androidipt.b1expensemanager.models.Category;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -22,7 +37,11 @@ public class OptionsFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
+    TextInputLayout texLayoutExpenseName;
+    TextInputEditText etName;
+    MaterialButton btnAdd;
+    ChipGroup chipGroup;
+    DbHelper dbHelper;
     public OptionsFragment() {
         // Required empty public constructor
     }
@@ -59,5 +78,90 @@ public class OptionsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_options, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        btnAdd = view.findViewById(R.id.btnAdd);
+        chipGroup=view.findViewById(R.id.chipGroup);
+        dbHelper=new DbHelper(getActivity());
+        texLayoutExpenseName = view.findViewById(R.id.texLayoutExpenseName);
+        etName=view.findViewById(R.id.etCategoryName);
+        ArrayList<Category> categoryArrayList = dbHelper.getAllCategories();
+        for (int i = 0; i < categoryArrayList.size(); i++) {
+            Chip chip = new Chip(chipGroup.getContext());
+            chip.setText(categoryArrayList.get(i).getName());
+            chip.setTag(categoryArrayList.get(i));
+            chip.setCheckable(false);
+            chip.setId(ViewCompat.generateViewId());
+            if(i==0){
+
+            }else{
+                chip.setCloseIconVisible(true); // Enable close icon
+                chip.setOnCloseIconClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Category category= (Category) chip.getTag();
+                        int count=dbHelper.deleteCategory(category.getId());
+                        if(count>0)
+                        {
+                            chipGroup.removeView(chip);
+                        }
+
+                    }
+                });
+            }
+
+            chipGroup.addView(chip);
+        }
+
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(validateFields())
+                {
+                    long count=dbHelper.insertCategory(etName.getText().toString().trim());
+                    if(count>0)
+                    {
+                        Chip chip = new Chip(chipGroup.getContext());
+                        chip.setText(etName.getText().toString().trim());
+                        chip.setTag(new Category((int) count,etName.getText().toString().trim()));
+                        chip.setCheckable(true);
+                        chip.setCloseIconVisible(true);
+                        chip.setId(ViewCompat.generateViewId());
+                        chip.setCloseIconVisible(true); // Enable close icon
+                        chip.setOnCloseIconClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Category category= (Category) chip.getTag();
+                                int count=dbHelper.deleteCategory(category.getId());
+                                if(count>0)
+                                {
+                                    chipGroup.removeView(chip);
+                                    chipGroup.invalidate();
+                                }
+
+                            }
+                        });
+                        chipGroup.addView(chip);
+                    }
+                }
+                }
+
+        });
+    }
+
+    private boolean validateFields() {
+        ArrayList<Boolean> errors = new ArrayList<>();
+
+        if (!etName.getText().toString().isEmpty() && etName.getText().toString().length() > 1) {
+            errors.add(true);
+            texLayoutExpenseName.setError(null);
+        } else {
+            texLayoutExpenseName.setError("Please enter a valid category name");
+            errors.add(false);
+        }
+        return !errors.contains(false);
     }
 }
