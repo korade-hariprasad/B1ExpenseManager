@@ -1,6 +1,7 @@
 package sumago.androidipt.b1expensemanager;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,6 +94,8 @@ public class OptionsFragment extends Fragment {
                 if(validateFields())
                 {
 
+                    long id=dbHelper.insertCategory(etName.getText().toString().trim());
+                    Log.d("mytag",""+id);
                 }
             }
         });

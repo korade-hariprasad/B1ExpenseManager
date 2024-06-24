@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -85,5 +86,7 @@ public class AnalyticsFragment extends Fragment {
     public void onResume() {
         super.onResume();
         tvTotal.setText(String.valueOf(dbHelper.getSum()));
+        analyticsAdapter=new AnalyticsAdapter(dbHelper.getExpenseReport());
+        recyclerViewAnalytics.setAdapter(analyticsAdapter);
     }
 }
